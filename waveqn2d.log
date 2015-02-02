@@ -1,0 +1,919 @@
+Warning in file ``/home/draconar/downloads/samrai/SAMRAI-v2.2.1/SAMRAI/source/toolbox/timers/TimerManager.C'' at line 69
+WARNING MESSAGE: 
+TimerManager::getManager() is called before
+createManager().  Creating the timer manager
+(without using input database.)
+
+
+Check input data and variables before simulation:
+Input database...
+input_db {
+   Main {
+      max_steps           = 40                              // input used
+      end_time            = 1                               // input used
+      regrid_interval     = 100                             // input used
+      log_file_name       = "waveqn2d.log"                  // input used
+      visit_dump_interval = 1                               // input used
+      visit_dump_dirname  = "viz_waveqn2d"                  // input used
+   }
+   LinWaveEqn {
+      cfl       = 0.5                                       // input used
+      initial_a = 0                                         // from default
+      initial_b = 1                                         // from default
+   }
+   CartesianGeometry {
+      domain_boxes       = [(0,0),(99,99)]                  // input used
+      x_lo               = 0, 0                             // input used
+      x_up               = 1, 1                             // input used
+      periodic_dimension = 1, 1                             // input used
+   }
+   GriddingAlgorithm {
+      max_levels              = 1                           // input used
+      efficiency_tolerance    = 0.7                         // input used
+      combine_efficiency      = 0.85                        // input used
+      resolve_nonnesting_tags = 'w'                         // from default
+      extend_tags_to_bdry     = FALSE                       // from default
+      use_new_alg             = FALSE                       // from default
+      ratio_to_coarser {
+         level_1 = 8, 8                                     // input not used
+         level_2 = 2, 2                                     // input not used
+         level_3 = 2, 2                                     // input not used
+         level_4 = 2, 2                                     // input not used
+         level_5 = 2, 2                                     // input not used
+         level_6 = 2, 2                                     // input not used
+      }
+      largest_patch_size {
+         level_0 = 10, 10                                   // input used
+      }
+      smallest_patch_size {
+         level_0 = 1, 1                                     // input used
+      }
+   }
+   StandardTagAndInitialize {
+      tagging_method = "GRADIENT_DETECTOR", "REFINE_BOXES"  // input used
+      RefineBoxes {
+         level_0 = [(1,1),(49,49)]                          // input used
+      }
+   }
+   TimerManager {
+      timer_list = "apps::main::*"                          // input not used
+   }
+   UniformLoadBalance {
+      use_spatial_bin_pack = TRUE                           // input not used
+   }
+   LoadBalancer {
+      use_spatial_bin_pack                 = TRUE           // input not used
+      bin_pack_method                      = "SPATIAL"      // from default
+      ignore_level_box_union_is_single_box = FALSE          // from default
+   }
+}
+
+Variable database...
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Printing hier::VariableDatabase<DIM> information...
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Variable Contexts registered with database:
+Context id = 0 : Context name = Internal_SAMRAI_Variable
+Context id = 1 : Context name = NEW
+Context id = 2 : Context name = CURRENT
+Context id = 3 : Context name = OLD
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Variables registered with database:
+Variable instance = 0
+   internal SAMRAI variable
+Variable instance = 1
+   internal SAMRAI variable
+Variable instance = 2
+   Variable name = u
+   Variable type = N6SAMRAI4pdat12NodeVariableILi2EdEE
+Variable instance = 3
+   Variable name = exact
+   Variable type = N6SAMRAI4pdat12NodeVariableILi2EdEE
+Variable instance = 4
+   Variable name = error
+   Variable type = N6SAMRAI4pdat12NodeVariableILi2EdEE
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Variable-Context pairs mapping to Patch Data Indices in database:
+Variable name = u
+   context id = 0 UNDEFINED for this variable
+   context id = 1, name = NEW :  patch data id = 2
+   context id = 2, name = CURRENT :  patch data id = 3
+   context id = 3, name = OLD :  patch data id = 4
+Variable name = exact
+   context id = 0 UNDEFINED for this variable
+   context id = 1 UNDEFINED for this variable
+   context id = 2, name = CURRENT :  patch data id = 5
+Variable name = error
+   context id = 0 UNDEFINED for this variable
+   context id = 1 UNDEFINED for this variable
+   context id = 2, name = CURRENT :  patch data id = 6
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Mapping from Patch Data Indices to Variables:
+Patch data id = 0 -- internal SAMRAI patch data
+Patch data id = 1 -- internal SAMRAI patch data
+Patch data id = 2 -- data factory name = u##NEW
+Patch data id = 3 -- data factory name = u##CURRENT
+Patch data id = 4 -- data factory name = u##OLD
+Patch data id = 5 -- internal SAMRAI patch data
+Patch data id = 6 -- internal SAMRAI patch data
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Printing contents of patch descriptor for comparison to database...
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Printing PatchDescriptor<DIM> state ...
+this = 0x8347e00
+d_max_number_registered_components = 7
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Patch Data Index=0
+   Patch Data Factory Name = GriddingAlgorithm__tag-interior##Internal_SAMRAI_Variable
+   Patch Data Factory = N6SAMRAI4pdat15CellDataFactoryILi2EiEE
+Patch Data Index=1
+   Patch Data Factory Name = GriddingAlgorithm__tag-buffer##Internal_SAMRAI_Variable
+   Patch Data Factory = N6SAMRAI4pdat15CellDataFactoryILi2EiEE
+Patch Data Index=2
+   Patch Data Factory Name = u##NEW
+   Patch Data Factory = N6SAMRAI4pdat15NodeDataFactoryILi2EdEE
+Patch Data Index=3
+   Patch Data Factory Name = u##CURRENT
+   Patch Data Factory = N6SAMRAI4pdat15NodeDataFactoryILi2EdEE
+Patch Data Index=4
+   Patch Data Factory Name = u##OLD
+   Patch Data Factory = N6SAMRAI4pdat15NodeDataFactoryILi2EdEE
+Patch Data Index=5
+   Patch Data Factory Name = exact##CURRENT
+   Patch Data Factory = N6SAMRAI4pdat15NodeDataFactoryILi2EdEE
+Patch Data Index=6
+   Patch Data Factory Name = error##CURRENT
+   Patch Data Factory = N6SAMRAI4pdat15NodeDataFactoryILi2EdEE
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+il = 0 tag_buffer = 1
+RMS of error on level 0 at time 0: 0.514267
+MAX norm of error: 1.58779 at location (80,50)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 0
+Simulation time is 0
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.005: 0.512014
+MAX norm of error: 1.78583 at location (80,80)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 0
+Simulation time is 0.005
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 1
+Simulation time is 0.005
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.01: 0.510736
+MAX norm of error: 1.85675 at location (80,80)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 1
+Simulation time is 0.01
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 2
+Simulation time is 0.01
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.015: 0.509784
+MAX norm of error: 1.78125 at location (80,80)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 2
+Simulation time is 0.015
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 3
+Simulation time is 0.015
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.02: 0.508798
+MAX norm of error: 1.7569 at location (81,80)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 3
+Simulation time is 0.02
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 4
+Simulation time is 0.02
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.025: 0.507708
+MAX norm of error: 1.84027 at location (81,81)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 4
+Simulation time is 0.025
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 5
+Simulation time is 0.025
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.03: 0.506642
+MAX norm of error: 1.78062 at location (81,81)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 5
+Simulation time is 0.03
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 6
+Simulation time is 0.03
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.035: 0.505779
+MAX norm of error: 1.81303 at location (82,81)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 6
+Simulation time is 0.035
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 7
+Simulation time is 0.035
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.04: 0.505218
+MAX norm of error: 1.89441 at location (82,82)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 7
+Simulation time is 0.04
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 8
+Simulation time is 0.04
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.045: 0.50495
+MAX norm of error: 1.89058 at location (83,82)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 8
+Simulation time is 0.045
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 9
+Simulation time is 0.045
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.05: 0.504898
+MAX norm of error: 1.92246 at location (83,83)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 9
+Simulation time is 0.05
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 10
+Simulation time is 0.05
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.055: 0.504962
+MAX norm of error: 1.91803 at location (83,83)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 10
+Simulation time is 0.055
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 11
+Simulation time is 0.055
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.06: 0.505066
+MAX norm of error: 1.9778 at location (84,83)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 11
+Simulation time is 0.06
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 12
+Simulation time is 0.06
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.065: 0.505175
+MAX norm of error: 2.05021 at location (84,84)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 12
+Simulation time is 0.065
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 13
+Simulation time is 0.065
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.07: 0.50529
+MAX norm of error: 2.07315 at location (85,84)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 13
+Simulation time is 0.07
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 14
+Simulation time is 0.07
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.075: 0.505434
+MAX norm of error: 2.09752 at location (85,85)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 14
+Simulation time is 0.075
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 15
+Simulation time is 0.075
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.08: 0.505633
+MAX norm of error: 2.0826 at location (85,85)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 15
+Simulation time is 0.08
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 16
+Simulation time is 0.08
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.085: 0.505917
+MAX norm of error: 2.17689 at location (86,85)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 16
+Simulation time is 0.085
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 17
+Simulation time is 0.085
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.09: 0.506323
+MAX norm of error: 2.26307 at location (86,86)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 17
+Simulation time is 0.09
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 18
+Simulation time is 0.09
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.095: 0.506914
+MAX norm of error: 2.31443 at location (87,86)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 18
+Simulation time is 0.095
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 19
+Simulation time is 0.095
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.1: 0.507783
+MAX norm of error: 2.35021 at location (87,87)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 19
+Simulation time is 0.1
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 20
+Simulation time is 0.1
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.105: 0.509045
+MAX norm of error: 2.35417 at location (88,87)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 20
+Simulation time is 0.105
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 21
+Simulation time is 0.105
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.11: 0.510789
+MAX norm of error: 2.40507 at location (88,87)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 21
+Simulation time is 0.11
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 22
+Simulation time is 0.11
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.115: 0.513037
+MAX norm of error: 2.52306 at location (88,88)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 22
+Simulation time is 0.115
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 23
+Simulation time is 0.115
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.12: 0.515729
+MAX norm of error: 2.61095 at location (89,88)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 23
+Simulation time is 0.12
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 24
+Simulation time is 0.12
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.125: 0.518776
+MAX norm of error: 2.67391 at location (89,89)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 24
+Simulation time is 0.125
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 25
+Simulation time is 0.125
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.13: 0.522175
+MAX norm of error: 2.70501 at location (90,89)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 25
+Simulation time is 0.13
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 26
+Simulation time is 0.13
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.135: 0.526059
+MAX norm of error: 2.70531 at location (90,90)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 26
+Simulation time is 0.135
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 27
+Simulation time is 0.135
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.14: 0.530565
+MAX norm of error: 2.81424 at location (90,90)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 27
+Simulation time is 0.14
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 28
+Simulation time is 0.14
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.145: 0.53576
+MAX norm of error: 2.95282 at location (91,90)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 28
+Simulation time is 0.145
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 29
+Simulation time is 0.145
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.15: 0.542081
+MAX norm of error: 3.06085 at location (91,91)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 29
+Simulation time is 0.15
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 30
+Simulation time is 0.15
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.155: 0.550686
+MAX norm of error: 3.13107 at location (92,91)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 30
+Simulation time is 0.155
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 31
+Simulation time is 0.155
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.16: 0.56258
+MAX norm of error: 3.16729 at location (92,92)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 31
+Simulation time is 0.16
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 32
+Simulation time is 0.16
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.165: 0.577867
+MAX norm of error: 3.33849 at location (59,91)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 32
+Simulation time is 0.165
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 33
+Simulation time is 0.165
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.17: 0.597211
+MAX norm of error: 3.67586 at location (58,59)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 33
+Simulation time is 0.17
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 34
+Simulation time is 0.17
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.175: 0.622881
+MAX norm of error: 4.23107 at location (59,59)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 34
+Simulation time is 0.175
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 35
+Simulation time is 0.175
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.18: 0.656552
+MAX norm of error: 4.59764 at location (59,60)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 35
+Simulation time is 0.18
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 36
+Simulation time is 0.18
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.185: 0.698781
+MAX norm of error: 4.82329 at location (60,60)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 36
+Simulation time is 0.185
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 37
+Simulation time is 0.185
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.19: 0.752476
+MAX norm of error: 5.1661 at location (59,90)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 37
+Simulation time is 0.19
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 38
+Simulation time is 0.19
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.195: 0.822412
+MAX norm of error: 5.9334 at location (60,61)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 38
+Simulation time is 0.195
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At begining of timestep # 39
+Simulation time is 0.195
+
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+RMS of error on level 0 at time 0.2: 0.911343
+MAX norm of error: 6.81218 at location (61,61)
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+At end of timestep # 39
+Simulation time is 0.2
+++++++++++++++++++++++++++++++++++++++++++++
+
+

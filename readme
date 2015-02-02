@@ -1,0 +1,319 @@
+The LinWaveEqn class provides an implementation that uses SAMRAI
+classes to solve the 2nd order linear wave eqn:
+
+    u_tt - u_xx = f
+
+with initial conditions
+
+    u(x,0) = a(x)
+    u_t(x,0) = b(x)
+
+The initial conditions over the entire mesh at t=0, and at the
+boundaries of the mesh when t > 0, are set to the exact solution
+ 
+    u = sin(w*(x-t)) * sin(w*x)
+
+where w = 4 * pi.  It compares the computed solution to the exact 
+solution on each timestep and writes the rms of the error.  It
+also dumps VisIt plot files of the computed solution, exact soln,
+and error.
+
+The class provides interfaces to problem dependent operations that
+are expected by gridding operations performed in SAMRAI.  For 
+example, initializing data on a level and resetting hierarchy 
+after regrid and pre and post process operations performed when 
+transferring data between hierarchy levels.  The class also 
+provides an "advance()" method which computes u^(n+1) on 
+hierarchy levels.
+
+compilation:
+------------
+Edit the Makefile and replace the SAMRAI and OBJECT targets to the 
+locations of your source and compiled libraries in your locally-installed 
+version of SAMRAI (they will the same thing if you built everything within 
+the SAMRAI directory).  Then do:
+
+   make
+
+This will generate the "main2d" executable.
+
+execution:
+----------
+The program should be executed as:
+
+     ./main2d <input file name>
+
+A sample input file called "waveqn-2d.input" is provided.
+See the end of this document for information about inputs.
+Below, we summarize the different operations performed in 
+each of the classes.
+
+visualizing results:
+--------------------
+Execution will generate a set of visualization files that may
+be viewed with the VisIt tool (http://www.llnl.gov/VisIt/home.html).
+The files will be stored in the directory specified in the input.
+For the "waveqn-2d.input" example, the directory is called "viz_waveqn2d".
+Go into this directory and invoke VisIt:
+
+ 1) cd viz_waveeqn2d
+ 2) visit dumps.visit
+ 3) Go to "plots->contour" and pick what you want to plot - 
+    Error, Exact, U
+ 4) Use the VCR-like controls to step through time dependent data.
+
+
+-----------------------------------------------------------------------
+
+The following discusses the contents of the two main files in the example,
+main.C and LinWaveEqn.C. More information can be found in the comments 
+in the code and in the LinWaveEqn.h header file.
+
+main.C
+^^^^^^
+
+1. Read problem input and store in input database
+2. Create the geometry (cartesian) and grid hierarchy.
+3. Create the LinWaveEqn problem class which defines various
+   operations for gridding and time-advance.  For gridding,
+   it specifies how to initialize data on the level and 
+   how to tag cells.  For time advance, it defines the 
+   "advance()" method which performs a single timestep on 
+   the grid hierarchy.
+4. Create the GriddingAlgorithm (supplying the tag method - 
+   type StandardTagAndInitialize, the load balancer, and 
+   clustering algorithm - type BergerRigoutsos).  Note
+   that the StandardTagAndInitialize object takes the
+   LinWaveEqn object as an argument.  The LinWaveEqn supplies 
+   methods for cell-tagging and initializing data on the level.
+5. Invoke the gridding algorithm to make the coarsest level.
+   (NOTE:  it will invoke the "LinWaveEqn::initializeLevelData()"
+   method as the last step of this process.
+6. Make finer levels.  (NOTE: it will invoke the LinWaveEqn::
+   applyGradientDetector() to tag cells for refinement on the
+   old coarse level and the LinWaveEqn::initializeLevelData() 
+   on the new fine level to set initial data).   
+7. We now have a constructed grid hierarchy.  Set up communication
+   on the hierarchy by calling LinWaveEqn::setupCommunication().
+8. Advance timestep loop:  
+
+        while ( (loop_time < end_time) &&
+           (iteration_num < max_steps) ) {
+
+           LinWaveEqn::advance(hierarchy, dt, loop_time);
+
+        }
+
+9. Regrid if we hit a re-gridding interval.
+10. Thats it!  De-allocate objects and shutdown.
+
+
+
+LinWaveEqn.C
+^^^^^^^^^^^^
+1.  Constructor: - create variables U and contexts - NEW, CURR, and
+                   OLD.  Register them with variable database.   
+                   Note that CURR has ghosts while the others have
+                   zero ghosts. Cache the returned patch data id 
+                   (e.g. d_u_cur_id) for use elsewhere in the class
+                   (e.g. to access data from patch).
+                 - register variables which we want to be plotted
+                   with the visit data writer.
+                 - get input parameters for the LinWaveEqn class
+                   from the input database.
+
+2.  setupCommunication(): 
+         - create a refine OPERATOR for the node-centered U
+           variable by doing a lookup.
+         - create a refine ALGORITHM which specifies we want to
+           interpolate d_u_cur_id data from the same level 
+           and coarser (source) into d_u_cur_id (dest).
+         - create a refine SCHEDULE for each level in the hierarchy.
+
+2.  advance(): 
+         - loop over levels finest to coarsest
+           - exchange ghosts on the level (fillData());
+           - allocate data which holds U^n+1 (i.e. u_new).
+           - loop over patches on level
+             - for each patch, access u_new, u_cur, and u_old from 
+               the patch.
+             - loop over nodes of the patch and compute temporary 
+               data f on the node
+                - compute u_new = F(u_cur, u_new, f)
+               }
+             }
+           - copy u_old = u_cur on level
+           - copy u_cur = u_new on level
+           - de-allocate U^n+1
+           }
+
+3. initializeLevelData(): (supplied to StandardTagAndInitialize)
+          - allocate data on level
+          - loop over patches and set initial conditions for
+            u^n, u^n-1.
+  
+4. applyGradientDetector(): (supplied to StandardTagAndInitialize)
+   currently empty - no refinement
+
+5. setPhysicalBoundaryConditions(): (supplied to RefineSchedule)
+          - set u_cur on edges of patch to the exact solution.
+            u_cur = sin(w*(x-t)) * sin(w*x)
+           
+
+      
+-----------------------------------------------------------------
+INPUTS:
+
+Main {
+   max_steps                = 500   // max # steps
+   end_time                 = 0.33  // end time
+   regrid_interval          = 100   // steps between regrid
+   log_file_name            = "waveqn2d.log"
+   visit_dump_interval        = 1   // steps between write viz file
+   visit_dump_dirname         = "viz_waveqn2d" // dir name for viz
+}
+
+LinWaveEqn {
+
+   // set eqn params:  u_tt - u_xx = f
+   //                  u(x,0) = a(x), u_t(x,0) = b(x)
+   cfl                      = 0.1
+
+}
+
+CartesianGeometry {
+   //  Specify lower/upper corners of the computational domain and a
+   //  set of non-overlapping boxes defining domain interior.  If union
+   //  of boxes is not a parallelpiped, lower/upper corner data corresponds
+   //  to min/max corner indices over all boxes given.
+   //  x_lo  -- (double array) lower corner of computational domain [REQD]
+   //  x_up  -- (double array) upper corner of computational domain [REQD]
+   //  domain_boxes  -- (box array) set of boxes that define interior of
+   //                   hysical domain. [REQD]
+   //  periodic_dimension -- (int array) coordinate directions in which
+   //                        domain is periodic.  Zero indicates not
+   //                        periodic, non-zero value indicates periodicity.
+   //                        [0]
+   x_lo = 0.e0 , 0.e0
+   x_up = 65.e0 , 55.e0
+   domain_boxes      = [(0,9),(14,20)],
+                       [(0,21),(19,35)],
+                       [(0,36),(14,49)],
+                       [(20,0),(49,54)],
+                       [(50,0),(64,35)],
+                       [(50,46),(64,54)],
+                       [(57,36),(64,45)]
+   periodic_dimension = 0, 1  // periodic in y only
+}
+
+   GriddingAlgorithm {
+      // Information used to create patches in AMR hierarchy.
+      // max_levels -- (int) max number of mesh levels in hierarchy [REQD]
+      //
+      // For most of the following parameters, the number of precribed data
+      // values need not match the number of levels in the hierarchy
+      // (determined by max_levels).  If more values are given than number
+      // of levels, extraneous values will be ignored.  If less are give, then
+      // values that correspond to individual levels will apply to those
+      // levels.  Missing values will be taken from those for the finest
+      // level specified.
+      //
+      // ratio_to_coarser {
+      //   level_1 -- (int array) ratio between index spaces on
+      //              level 1 to level 0 [REQD]
+      //   level_2 -- (int array)  ratio between index spaces on
+      //              level 2 to level 1 [REQD]
+      //   etc....
+      // }
+      // largest_patch_size {
+      //   level_0 -- (int array) largest patch allowed on level 0.
+      //              [REQD]
+      //   level_1 -- (int array)    "       "      "   "  level 1
+      //              [level 0 entry]
+      //   etc....
+      // }
+      // smallest_patch_size {
+      //   level_0 -- (int array) smallest patch allowed on level 0.
+      //              [max ghost width for all variables]
+      //   level_1 -- (int array)    "       "      "   "  level 1
+      //              [level 0 entry]
+      //   etc....
+      // }
+      max_levels = 3
+      ratio_to_coarser {
+         level_1 = 4 , 4
+         level_2 = 4 , 4
+         level_3 = 4 , 4
+      }
+      largest_patch_size {
+         level_0 = 48 , 48
+      }
+      smallest_patch_size {
+         level_0 = 8 , 8
+      }
+
+      // Tolerances for gridding efficiency and box chopping operations.
+      // efficiency_tolerance -- (double array) minimum percentage of tagged
+      //                         cells allowed in a box [0.8 for each level]
+      // combine_efficiency   -- (double array) threshold specifying when a
+      //                         box may be chopped into two smaller boxes.
+      //                         If sum of the volumes of smaller boxes is >
+      //                         combine efficiency * volume of larger box,
+      //                         then larger box will not be chopped.
+      //                         [0.8 for each level]
+      // proper_nesting_buffer -- (int array) number of coarse cells by which
+      //                          the next finer level is nested within its
+      //                          interior. [1 for each level]
+      efficiency_tolerance    = 0.85e0
+      combine_efficiency      = 0.95e0
+      proper_nesting_buffer   = 1
+
+      // Option to read or write gridding information
+      // write_regrid_boxes    -- (bool) Output sequence of refine boxes to file
+      // read_regrid_boxes     -- (bool) Read sequence of refine boxes from file
+      // regrid_boxes_filename -- (string) file name used for reading or writing
+      //                          boxes.
+      //
+      // Reading and writing options require some user intervention to assure
+      // they work properly.  Please consult Andy Wissink (awissink@llnl.gov)
+      // if you are interested in using these options.
+      write_regrid_boxes    = TRUE
+      regrid_boxes_filename = TRUE
+   }
+
+   StandardTagAndInitialize {
+      // Specification of the type of tagging to be performed
+      // tagging_type -- (string array) one or more entries specifying
+      //                 the tagging algorithm used.  Options include:
+      //                 "GRADIENT_DETECTOR"
+      //                 "RICHARDSON_EXTRAPOLATION"
+      //                 "REFINE_BOXES"
+      //
+      // REFINE_BOXES allows you to prescribe where refinement should occur.
+      // If this option is used, you must also supply a RefineBoxes database
+      // entry with the refine boxes on different levels specified.  i.e.
+      //    RefineBoxes{
+      //        level_0 -- (BoxArray) Boxes to be refined on level 0
+      //        level_1 -- (BoxArray) Boxes to be refined on level 1
+      //        etc.
+      //
+      // Gradient detection option.
+      tagging_type = "GRADIENT_DETECTOR"
+      //
+      // Richarson extrapolation option.
+      tagging_type = "RICHARDSON_EXTRAPOLATION"
+      //
+      // Static refine boxes option.
+      tagging_type = "REFINE_BOXES"
+      RefineBoxes {
+        level0_boxes = [(15,0),(29,14)]
+        level1_boxes = [(65,10),(114,40)]
+      }
+      // Combination.
+      tagging_type = "RICHARDSON_EXTRAPOLATION", "GRADIENT_DETECTOR"
+   }
+
+   LoadBalancer {
+      // using default uniform load balance configuration (see mesh_LoadBalancerX.h.sed)
+   }
+

@@ -1,0 +1,38 @@
+##
+## File:	Makefile.in
+## Package:	SAMRAI applications
+## Copyright:	(c) 1997-2002 The Regents of the University of California
+## Release:	$Name:  $
+## Revision:	$Revision: 1.2 $
+## Modified:	$Date: 2002/08/21 01:31:51 $
+## Description:	makefile for wave equation sample application
+##
+
+SAMRAI	      =	/opt/samrai/SAMRAI
+OBJECT        = /opt/samrai/objs
+
+include $(OBJECT)/config/Makefile.config
+
+CPPFLAGS_EXTRA= -DDISPLAY -DNDIM=2
+#LDFLAGS_EXTRA= --link_command_prefix "/usr/local/bin/purify4.5 -best-effort"
+
+CXX_OBJS      = main.o LinWaveEqn.o
+F2D_OBJS      = updateu2d.o 
+
+main2d:		$(CXX_OBJS) $(F2D_OBJS) $(LIBSAMRAI)
+		$(CXX) $(CXXFLAGS) $(LDFLAGS) $(CXX_OBJS) $(F2D_OBJS) \
+		$(LIBSAMRAI2D) $(LIBSAMRAI) $(LDLIBS) -o main2d
+ 
+clean:
+		$(RM) main2d core
+		$(RM) *.f *.o *.ii *.int.c stamp-[23]d 
+		$(RM) -r ti_files ii_files
+		$(RM) *log*
+
+include Makefile.depend
+
+M4DIRS        = -DSAMRAI_FORTDIR=$(SAMRAI)/\`include\'
+
+updateu2d.o:	updateu2d.m4
+		$(M4) $(M4DIRS) ./updateu2d.m4 > updateu2d.f
+		$(F77) $(FFLAGS) -c updateu2d.f -o $@

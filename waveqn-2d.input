@@ -1,0 +1,93 @@
+//
+// File:        input_3d.amr
+// Package:     SAMRAI application
+// Copyright:   (c) 1997-2002 The Regents of the University of California
+// Release:     $Name:  $
+// Revision:    $Revision: 1.2 $
+// Modified:    $Date: 2002/08/21 01:31:51 $
+// Description: Input file for SAMRAI Wave Eqn test program
+//
+
+Main {
+
+   max_steps                = 40 //time steps
+   end_time                 = 1
+   regrid_interval          = 100
+
+   log_file_name            = "waveqn2d.log"
+
+   visit_dump_interval        = 1      
+   visit_dump_dirname         = "viz_waveqn2d"
+
+}
+
+LinWaveEqn {
+   // set eqn params:  u_tt - u_xx = f
+   //                  u(x,0) = a(x), u_t(x,0) = b(x)
+   cfl                      = .5
+}
+
+CartesianGeometry {
+//   domain_boxes  = [ (0,0) , (219,169) ]  // fine mesh
+//   domain_boxes  = [ (0,0) , (2,2) ]   // coarse mesh
+//   domain_boxes  = [ (25,25) , (74,74) ], [ (100,0) , (109, 109)] // coarse mesh
+     domain_boxes  = [ (0,0) , (99,99) ] // coarse mesh   
+     x_lo          = 0e0 , 0e0  // lower end of computational domain.
+     x_up          = 1e0 , 1e0  // upper end of computational domain.
+
+   periodic_dimension = 1,1
+}
+
+GriddingAlgorithm {
+   max_levels              = 1// Maximum number of levels in hierarchy.
+
+// Note: For the following regridding information, data is required for each
+//       potential in the patch hierarchy; i.e., levels 0 thru max_levels-1.
+//       If more data values than needed are given, only the number required
+//       will be read in.  If fewer values are given, an error will result.
+//
+// Specify coarsening ratios for each level 1 through max_levels-1
+   ratio_to_coarser {         // vector ratio to next coarser level
+      level_1               = 8 , 8 
+      level_2               = 2 , 2 
+      level_3               = 2 , 2 
+level_4               = 2 , 2
+level_5               = 2 , 2 
+level_6               = 2 , 2  
+   }
+
+   largest_patch_size {
+      level_0 = 10, 10
+      // all finer levels will use same values as level_0...
+   }
+
+   smallest_patch_size {
+      level_0 = 1 , 1
+      // all finer levels will use same values as level_0...
+   }
+
+   efficiency_tolerance     = 0.70e0   // min % of tag cells in new patch level
+   combine_efficiency       = 0.85e0   // chop box if sum of volumes of smaller
+                                       // boxes < efficiency * vol of large box
+}
+
+StandardTagAndInitialize{
+   tagging_method = "GRADIENT_DETECTOR", "REFINE_BOXES"
+   RefineBoxes {
+      level_0  = [ (1,1) , (49,49)]
+   }
+}
+
+TimerManager {
+   timer_list = "apps::main::*"
+}
+
+
+UniformLoadBalance {  // for SAMRAI v1.3.1
+//   processors         = 1 , 1
+   use_spatial_bin_pack = TRUE
+}
+LoadBalancer {  // for SAMRAI v1.3.2
+   use_spatial_bin_pack = TRUE
+}
+
